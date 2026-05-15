@@ -1,24 +1,96 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { MaterialIcons } from '@expo/vector-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useFonts } from 'expo-font'
+import { router, SplashScreen, Stack, useSegments } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { Alert, Pressable } from 'react-native'
+import 'react-native-reanimated'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import '../styles/global.css'
 
 export const unstable_settings = {
   anchor: '(tabs)',
-};
+}
+
+SplashScreen.preventAutoHideAsync()
+const queryClient = new QueryClient()
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const segments = useSegments()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [loaded, error] = useFonts({
+    Comic: require('../assets/fonts/Comic-Book-Bold.otf'),
+    Inter: require('../assets/fonts/Inter-Regular.ttf'),
+    'Inter-SB': require('../assets/fonts/Inter-SemiBold.ttf'),
+  })
+
+  const checkSession = async () => {
+    const session = await AsyncStorage.getItem('user_session')
+    setIsLoggedIn(!!session)
+  }
+
+  useEffect(() => {
+    checkSession()
+  }, [segments])
+
+  useEffect(() => {
+    if (loaded || error) SplashScreen.hideAsync()
+  }, [loaded, error])
+
+  if (!loaded && !error) return null
+
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Yakin mau keluar mas?', [
+      { text: 'Batal', style: 'cancel' },
+      {
+        text: 'Keluar',
+        style: 'destructive',
+        onPress: async () => {
+          await AsyncStorage.removeItem('user_session')
+          router.replace('/')
+        },
+      },
+    ])
+  }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <Stack
+          screenOptions={{
+            headerTitleStyle: {
+              fontFamily: 'Inter-SB',
+              fontSize: 18,
+            },
+          }}
+        >
+          <Stack.Screen name='index' options={{ headerShown: false }} />
+          <Stack.Screen
+            name='article/index'
+            options={{
+              headerTitleStyle: { fontFamily: 'Comic' },
+              title: 'Home Of Events',
+              headerRight: () =>
+                isLoggedIn ? (
+                  <Pressable
+                    onPress={handleLogout}
+                    className='mr-2 active:opacity-50'
+                  >
+                    <MaterialIcons name='logout' size={24} color='#EF4444' />
+                  </Pressable>
+                ) : null,
+            }}
+          />
+          <Stack.Screen
+            name='article/[id]'
+            options={{
+              headerTitleStyle: { fontFamily: 'Comic', fontSize: 20 },
+              title: 'Detail Artikel',
+            }}
+          />
+        </Stack>
+      </SafeAreaProvider>
+    </QueryClientProvider>
+  )
 }
