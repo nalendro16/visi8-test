@@ -1,9 +1,9 @@
+import { useAuthStore } from '@/store/authStore'
 import { MaterialIcons } from '@expo/vector-icons'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useFonts } from 'expo-font'
 import { router, SplashScreen, Stack, useSegments } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Alert, LogBox, Platform, Pressable } from 'react-native'
 import 'react-native-reanimated'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
@@ -22,21 +22,18 @@ const queryClient = new QueryClient()
 
 export default function RootLayout() {
   const segments = useSegments()
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
   const [loaded, error] = useFonts({
     Comic: require('../assets/fonts/Comic-Book-Bold.otf'),
     Inter: require('../assets/fonts/Inter-Regular.ttf'),
     'Inter-SB': require('../assets/fonts/Inter-SemiBold.ttf'),
   })
 
-  const checkSession = async () => {
-    const session = await AsyncStorage.getItem('user_session')
-    setIsLoggedIn(!!session)
-  }
+  const { isLoggedIn, checkAuth, logout } = useAuthStore()
 
   useEffect(() => {
-    checkSession()
-  }, [segments])
+    checkAuth()
+  }, [])
 
   useEffect(() => {
     if (loaded || error) SplashScreen.hideAsync()
@@ -46,9 +43,9 @@ export default function RootLayout() {
 
   const handleLogout = async () => {
     if (Platform.OS === 'web') {
-      const isConfirmed = window.confirm('Yakin mau keluar mas?')
+      const isConfirmed = window.confirm('Yakin mau keluar?')
       if (isConfirmed) {
-        await AsyncStorage.removeItem('user_session')
+        await logout()
         router.replace('/')
       }
       return
@@ -60,7 +57,7 @@ export default function RootLayout() {
         text: 'Keluar',
         style: 'destructive',
         onPress: async () => {
-          await AsyncStorage.removeItem('user_session')
+          await logout()
           router.replace('/')
         },
       },

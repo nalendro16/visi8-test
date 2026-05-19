@@ -1,6 +1,6 @@
 import { Images } from '@/assets/images'
 import { AppInput } from '@/components/AppInput'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useAuthStore } from '@/store/authStore'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
@@ -8,6 +8,7 @@ import { Pressable, Text, View } from 'react-native'
 
 const Login = () => {
   const router = useRouter()
+  const login = useAuthStore((state) => state.login)
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -46,8 +47,8 @@ const Login = () => {
           user: email,
           loginTime: new Date().toISOString(),
         })
-        await AsyncStorage.setItem('user_session', sessionData)
 
+        await login()
         router.replace('/article')
       } catch (e) {
         console.error('Gagal simpan sesi', e)

@@ -252,7 +252,6 @@ const DetailArticle = () => {
                 if (imageUrl.startsWith('../')) {
                   const baseUrl = process.env.EXPO_PUBLIC_BASE_RAW_URL
                   imageUrl = imageUrl.replace('../', baseUrl + '/')
-                  console.log(imageUrl)
                 }
 
                 return (

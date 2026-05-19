@@ -23,3 +23,5 @@
 ## NOTE
 
 - Pembuatan file ini juga menggunakan gemini untuk pembuatan markdown dan text nya
+- Penggunaan zustand disini untuk menunjukan bahwa _developer_ menggunakan global state dengan opsi termudah karena baru sadar ada requierement global state di saat aplikasi hampir selesai
+- penggunaan asyncStorage dipilih karena _developer_ memiliki pngalaman penggunaan library tersebut dibanding library lain
