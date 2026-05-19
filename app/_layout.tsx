@@ -4,10 +4,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useFonts } from 'expo-font'
 import { router, SplashScreen, Stack, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Alert, Pressable } from 'react-native'
+import { Alert, LogBox, Pressable } from 'react-native'
 import 'react-native-reanimated'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import '../styles/global.css'
+
+LogBox.ignoreLogs([
+  'React keys must be passed directly to JSX without using spread',
+])
 
 export const unstable_settings = {
   anchor: '(tabs)',

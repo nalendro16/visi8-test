@@ -11,6 +11,7 @@ import {
   Text,
   View,
 } from 'react-native'
+import Animated from 'react-native-reanimated'
 
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('id-ID', {
@@ -23,6 +24,7 @@ const formatDate = (dateStr: string) => {
 const ListArticle = () => {
   const router = useRouter()
   const LIMIT = 5
+  const AnimatedImage = Animated.createAnimatedComponent(Image)
 
   const {
     data,
@@ -80,13 +82,15 @@ const ListArticle = () => {
           onPress={() => router.push(`/article/${item.id}`)}
           className='p-4 border-b border-gray-100 bg-white active:bg-gray-50'
         >
-          <Image
-            source={{ uri: articleService.getImageUrl(item.banner_url) }}
-            className='rounded-xl bg-gray-200 w-full mb-4'
-            style={{ height: 212 }}
-            contentFit='cover'
-            transition={200}
-          />
+          <Animated.View>
+            <Image
+              source={{ uri: articleService.getImageUrl(item.banner_url) }}
+              className='rounded-xl bg-gray-200 w-full mb-4'
+              style={{ height: 212 }}
+              contentFit='cover'
+              transition={200}
+            />
+          </Animated.View>
 
           <View className='w-full'>
             <Text className='font-bold text-lg text-gray-900 leading-6'>
