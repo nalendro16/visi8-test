@@ -217,19 +217,54 @@ const DetailArticle = () => {
               link: { color: '#74b360', textDecorationLine: 'underline' },
               paragraph: { marginBottom: 15 },
               list_item: { marginBottom: 5 },
-              renderRules: {},
+              blockquote: {
+                backgroundColor: '#F3F4F6',
+                borderLeftWidth: 4,
+                borderLeftColor: '#74b360',
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                marginBottom: 16,
+                borderRadius: 4,
+              },
+              fence: {
+                backgroundColor: '#1F2937',
+                color: '#F9FAFB',
+                padding: 16,
+                borderRadius: 8,
+                marginBottom: 16,
+                fontFamily: 'monospace',
+                fontSize: 14,
+              },
+              code_inline: {
+                backgroundColor: '#F3F4F6',
+                color: '#EF4444',
+                paddingHorizontal: 6,
+                paddingVertical: 2,
+                borderRadius: 4,
+                fontFamily: 'monospace',
+                fontSize: 14,
+              },
             }}
             rules={{
-              image: (node, children, parent, styles) => {
+              image: (node) => {
+                let imageUrl = node.attributes.src
+
+                if (imageUrl.startsWith('../')) {
+                  const baseUrl =
+                    'https://raw.githubusercontent.com/URL_GITHUB_MAS/main'
+                  imageUrl = imageUrl.replace('../', baseUrl + '/')
+                }
+
                 return (
                   <Image
                     key={node.key}
-                    source={{ uri: node.attributes.src }}
+                    source={{ uri: imageUrl }}
                     style={{
                       width: '100%',
-                      height: 200,
+                      height: 220,
                       borderRadius: 8,
-                      marginVertical: 12,
+                      marginVertical: 16,
+                      backgroundColor: '#E5E7EB',
                     }}
                     contentFit='cover'
                     transition={200}

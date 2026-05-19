@@ -58,7 +58,7 @@ describe('DetailArticle Component', () => {
     })
   })
 
-  it('simpan reading progress saat scroll berhenti', async () => {
+  it('simpan reading progress saat multiple rapid updates', async () => {
     ;(useQuery as jest.Mock).mockReturnValue({
       data: mockArticleData,
       isLoading: false,
