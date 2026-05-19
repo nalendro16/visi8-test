@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useFonts } from 'expo-font'
 import { router, SplashScreen, Stack, useSegments } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Alert, LogBox, Pressable } from 'react-native'
+import { Alert, LogBox, Platform, Pressable } from 'react-native'
 import 'react-native-reanimated'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import '../styles/global.css'
@@ -44,8 +44,17 @@ export default function RootLayout() {
 
   if (!loaded && !error) return null
 
-  const handleLogout = () => {
-    Alert.alert('Logout', 'Yakin mau keluar mas?', [
+  const handleLogout = async () => {
+    if (Platform.OS === 'web') {
+      const isConfirmed = window.confirm('Yakin mau keluar mas?')
+      if (isConfirmed) {
+        await AsyncStorage.removeItem('user_session')
+        router.replace('/')
+      }
+      return
+    }
+
+    Alert.alert('Logout', 'Yakin mau keluar?', [
       { text: 'Batal', style: 'cancel' },
       {
         text: 'Keluar',
@@ -83,7 +92,14 @@ export default function RootLayout() {
                   >
                     <MaterialIcons name='logout' size={24} color='#EF4444' />
                   </Pressable>
-                ) : null,
+                ) : (
+                  <Pressable
+                    onPress={() => router.push('/')}
+                    className='mr-2 active:opacity-50'
+                  >
+                    <MaterialIcons name='login' size={24} color='#3B82F6' />
+                  </Pressable>
+                ),
             }}
           />
           <Stack.Screen
