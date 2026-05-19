@@ -1,7 +1,5 @@
-const BASE_RAW_URL =
-  'https://raw.githubusercontent.com/visi8-ppramesi/visi8-interview-mock-backend/main'
-const BASE_IMAGE_URL =
-  'https://raw.githubusercontent.com/visi8-ppramesi/visi8-interview-mock-backend'
+const BASE_RAW_URL = process.env.EXPO_PUBLIC_BASE_RAW_URL || ''
+const BASE_IMAGE_URL = process.env.EXPO_PUBLIC_BASE_IMAGE_URL || ''
 
 export const articleService = {
   getArticles: async () => {

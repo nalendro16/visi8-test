@@ -250,9 +250,9 @@ const DetailArticle = () => {
                 let imageUrl = node.attributes.src
 
                 if (imageUrl.startsWith('../')) {
-                  const baseUrl =
-                    'https://raw.githubusercontent.com/URL_GITHUB_MAS/main'
+                  const baseUrl = process.env.EXPO_PUBLIC_BASE_RAW_URL
                   imageUrl = imageUrl.replace('../', baseUrl + '/')
+                  console.log(imageUrl)
                 }
 
                 return (
