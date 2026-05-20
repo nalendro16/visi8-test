@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+
 import {
   ActivityIndicator,
   Dimensions,
@@ -222,12 +223,18 @@ const DetailArticle = () => {
         testID='article-scroll-test'
         ref={scrollToViewRef}
         className='flex-1'
+        contentInsetAdjustmentBehavior='automatic'
         onScroll={handleScroll}
         scrollEventThrottle={32}
         onContentSizeChange={handleContentSizeChange}
         showsVerticalScrollIndicator={false}
         onScrollEndDrag={handleScrollEnd}
         onMomentumScrollEnd={handleScrollEnd}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingTop: 24,
+          paddingBottom: 40,
+        }}
       >
         <Image
           source={{ uri: articleService.getImageUrl(data.image) }}
@@ -260,7 +267,11 @@ const DetailArticle = () => {
                 lineHeight: 26,
                 color: '#374151',
               },
-              heading1: { marginBottom: 10, fontWeight: 'bold' },
+              heading1: {
+                marginBottom: 10,
+                fontWeight: 'bold',
+                fontSize: Platform.OS === 'ios' ? 26 : 28,
+              },
               strong: { fontWeight: 'bold' },
               link: { color: '#74b360', textDecorationLine: 'underline' },
               paragraph: { marginBottom: 15 },
