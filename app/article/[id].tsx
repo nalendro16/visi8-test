@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Dimensions,
@@ -12,6 +12,7 @@ import {
   NativeSyntheticEvent,
   Platform,
   Pressable,
+  Image as RNImage,
   ScrollView,
   Text,
   View,
@@ -37,6 +38,53 @@ const DetailArticle = () => {
     queryFn: () => articleService.getArticleDetail(id as string),
     enabled: !!id,
   })
+
+  const markdownRules = useMemo(
+    () => ({
+      image: (node: any) => {
+        let imageUrl = node.attributes.src
+
+        if (imageUrl.startsWith('../')) {
+          const baseUrl = process.env.EXPO_PUBLIC_BASE_RAW_URL || ''
+          imageUrl = imageUrl.replace('../', `${baseUrl}/`)
+        }
+        if (Platform.OS === 'android') {
+          return (
+            <RNImage
+              key={node.key}
+              source={{ uri: imageUrl }}
+              style={{
+                width: '100%',
+                height: 220,
+                borderRadius: 8,
+                marginVertical: 16,
+                backgroundColor: '#E5E7EB',
+              }}
+              resizeMode='cover'
+            />
+          )
+        }
+
+        return (
+          <Image
+            key={node.key}
+            source={{ uri: imageUrl }}
+            style={{
+              width: '100%',
+              height: 220,
+              borderRadius: 8,
+              marginVertical: 16,
+              backgroundColor: '#E5E7EB',
+            }}
+            contentFit='cover'
+            cachePolicy='memory-disk'
+            transition={0}
+          />
+        )
+      },
+    }),
+    [],
+  )
 
   useEffect(() => {
     const loadSavedProgress = async () => {
@@ -245,32 +293,7 @@ const DetailArticle = () => {
                 fontSize: 14,
               },
             }}
-            rules={{
-              image: (node) => {
-                let imageUrl = node.attributes.src
-
-                if (imageUrl.startsWith('../')) {
-                  const baseUrl = process.env.EXPO_PUBLIC_BASE_RAW_URL
-                  imageUrl = imageUrl.replace('../', baseUrl + '/')
-                }
-
-                return (
-                  <Image
-                    key={node.key}
-                    source={{ uri: imageUrl }}
-                    style={{
-                      width: '100%',
-                      height: 220,
-                      borderRadius: 8,
-                      marginVertical: 16,
-                      backgroundColor: '#E5E7EB',
-                    }}
-                    contentFit='cover'
-                    transition={200}
-                  />
-                )
-              },
-            }}
+            rules={markdownRules}
           >
             {data.body}
           </Markdown>
